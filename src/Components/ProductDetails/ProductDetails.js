@@ -23,7 +23,7 @@ const ProductDetails = () => {
       <div >
         <img alt="product" src={item.image} width="250" />
         <h5>{item.title}</h5>
-        <p style={{color:"gray", fontStyle:"italic"}}>  {item.category}</p>
+        <p>  {item.category}</p>
         Rating {item.rating && item.rating.rate}
         <div>${item.price}</div>
       </div>
