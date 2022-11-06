@@ -53,3 +53,32 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
 }
+.content > input{
+  display: block;
+  text-align: left;
+  margin: 10px;
+}
+.content > label{
+  display: block;
+  text-align: left;
+  margin: 10px;
+}
+option{
+  text-align: left;
+
+}
+.content >input[type=submit] {
+  width: 30%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 10px;
+  margin: 3px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.content > select{
+  display: block;
+  text-align: left;
+  margin: 10px;
+}
