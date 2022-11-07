@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import MyImage from '../../images/swater.jpeg'
-
+import MyImage from "../../images/swater.jpeg";
 import ".//Products.css";
 
 const Products = () => {
   const [data, setData] = useState([]);
   const [filters, setFilter] = useState([]);
+  const [query, setQuery]=useState(0);
   const options = [
     { value: "", text: "--Choose an option--" },
     { value: "women's clothing", text: "women's clothing" },
@@ -15,12 +15,33 @@ const Products = () => {
     { value: "electronics", text: "electronics" },
   ];
 
+  
+
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
   const [item, setItem] = useState([]);
   const [isActive, setIsActive] = useState({});
   const [description, setDescription] = useState("");
+
+  const validate=()=>{
+    if(title==="" || price==="" || category===""||description===""){
+      alert(" add title for the activity")
+    }
+    else{
+      newPoduct()
+      handSubmit();
+      clearForm()
+    }
+   }
+  const clearForm=()=>{
+    setTitle("")
+    setPrice("")
+    setCategory("")
+    setDescription("")
+
+  }
+
 
   const newPoduct = () => {
     setItem([
@@ -32,10 +53,7 @@ const Products = () => {
         description: description,
       },
     ]);
-    handSubmit();
   };
-
-  console.log(item);
 
   const handleModal = () => {
     setIsActive({
@@ -60,30 +78,70 @@ const Products = () => {
   };
   useEffect(() => {
     const getItems = async () => {
-      const response = await fetch("https://fakestoreapi.com/products");
+      const response = await fetch(`https://fakestoreapi.com/products?limit=${query}`);
       const data = await response.json();
       setData(data);
       setFilter(data);
     };
     getItems();
-  }, []);
+  }, [query]);
 
+  const removlist = [...filters];
 
-  
+  const deleHandler = (num) => {
+    console.log(num);
+    removlist.splice(num, 1);
 
-  const filterData = (cate) => {
-    const categorized = data.filter((y) => y.category === cate);
-    setFilter(categorized);
+    setFilter(removlist);
   };
+  const filterData = (cate) => {
+    if (cate === "all") {
+      setFilter(data);
+    } else {
+      const categorized = data.filter((y) => y.category === cate);
+      setFilter(categorized);
+    }
+  };
+
 
   return (
     <div>
       <div className="grid-1">
+        
+
+        <div className="btn">
+          <button onClick={() => setFilter(data)}>Home</button>
+          <select
+            onChange={(e) => {
+              filterData(e.target.value);
+            }}
+          >
+            <option value="all">Categories</option>
+            <option value="women's clothing">Women Clothing</option>
+            <option value="men's clothing">Men Clothing</option>
+            <option value="jewelery">Jewelery</option>
+            <option value="electronics">Electronics</option>
+          </select>
+
+          <select
+            value={query}
+            onChange={(e) => {
+              setQuery(parseInt(e.target.value));
+            }}
+          >
+            <option value="0">Limits</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+          </select>
+        </div>
+
+          
         <div className="addtext">
           <input type="checkbox" id="click" />
 
           <label htmlFor="click" className="click-me" onClick={handleModal}>
-            Add Task +{" "}
+            Add Task +
           </label>
 
           <div className="content" style={isActive}>
@@ -123,29 +181,17 @@ const Products = () => {
             <input
               type="submit"
               onClick={() => {
-                newPoduct();
+                validate();
               }}
             />
           </div>
         </div>
-        </div>
-      <div>
-        <button onClick={() => setFilter(data)}>All</button>
-        <button onClick={() => filterData("women's clothing")}>
-          Women's Clothing
-        </button>
-        <button onClick={() => filterData("men's clothing")}>
-          Men's Clothing
-        </button>
-        <button onClick={() => filterData("jewelery")}>Jewelery</button>
-        <button onClick={() => filterData("electronics")}>Electronics</button>
       </div>
 
-
-
-
       <div className="products">
-        {filters.map((product) => {
+        {filters.map((product, index) => {
+                        // console.log(index);
+
           return (
             <div className="product-1">
               <div>
@@ -159,9 +205,13 @@ const Products = () => {
               <div>
                 <p>${product.price}</p>
               </div>
-              <NavLink to={`/ProductDetails/${product.id}`}>
-                <button> Details</button>
-              </NavLink>
+              <div>
+
+                <button onClick={()=>{deleHandler(index)}}> Delete</button>
+                <NavLink to={`/ProductDetails/${product.id}`}>
+                  <button> Details</button>
+                </NavLink>
+              </div>
             </div>
           );
         })}
