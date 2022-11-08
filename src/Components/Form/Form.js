@@ -1,8 +1,13 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import MyImage from "../../images/swater.jpeg";
 
-export default function Form ({sendData}) {
-  const [formInputs, setFormInputs] = useState({});
+export default function Form({ sendData }) {
+  const [formInputs, setFormInputs] = useState({
+    title: "",
+    price: 1,
+    description: "",
+    category: "",
+  });
   const [isActive, setIsActive] = useState({});
 
   const options = [
@@ -20,20 +25,24 @@ export default function Form ({sendData}) {
     }));
   };
 
-  const validate = () => {
+  const validate = (e) => {
     if (
-      formInputs.title === ""
+      formInputs.title === "" ||
+      // formInputs.price >=1||
+      formInputs.category === "" ||
+      formInputs.description === ""
     ) {
       alert(" You did not complete  the form, kindly do so.");
-    } 
-    else {
-      submitHandle()
+    } else {
+      submitHandle();
       console.log(formInputs);
-      sendData(formInputs)    
+      sendData(formInputs);
+      clearForm();
     }
   };
-
-  
+  const clearForm = () => {
+    setFormInputs({ title: "", price: 0, description: "", category: "" });
+  };
 
   const submitHandle = () => {
     setIsActive({
@@ -53,7 +62,7 @@ export default function Form ({sendData}) {
       <input type="checkbox" id="click" />
 
       <label htmlFor="click" className="click-me" onClick={handleModal}>
-        Add Task +
+        Add Product +
       </label>
 
       <div className="content" style={isActive}>
@@ -85,7 +94,9 @@ export default function Form ({sendData}) {
           onChange={handleInputChange}
         />
         <label htmlFor="description">Description:</label>
-        <input
+        <textarea
+          rows="4"
+          cols="35"
           type="text"
           name="description"
           id="description"
@@ -101,5 +112,4 @@ export default function Form ({sendData}) {
       </div>
     </div>
   );
-};
-
+}

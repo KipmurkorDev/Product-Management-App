@@ -1,56 +1,69 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
+import axios from "axios";
 import Form from "../Form/Form";
 import ".//Products.css";
 
 const Products = () => {
   const [data, setData] = useState([]);
-  const [filters, setFilter] = useState([]);
-  const [query, setQuery] = useState(0);
-
+  const [products, setProducts] = useState([]);
+  const [query, setQuery] = useState();
 
   const handSubmit = (formInputs) => {
     console.log(formInputs);
     setData([...[formInputs], ...data]);
-    setFilter(data);
+    setProducts(data);
     console.log(data);
   };
-
 
   useEffect(() => {
     const getItems = async () => {
       const response = await fetch(
-        `https://fakestoreapi.com/products?limit=${query}`
+        `https://fakestoreapi.com/products?${query}`
       );
       const data = await response.json();
+
       setData(data);
-      setFilter(data);
+      setProducts(data);
     };
     getItems();
   }, [query]);
 
-  const removlist = [...filters];
+  // delete methods
+  const removlist = [...products];
 
   const deleHandler = (num) => {
     console.log(num);
     removlist.splice(num, 1);
 
-    setFilter(removlist);
+    setProducts(removlist);
   };
+  // filter by category
   const filterData = (cate) => {
     if (cate === "all") {
-      setFilter(data);
+      setProducts(data);
     } else {
       const categorized = data.filter((y) => y.category === cate);
-      setFilter(categorized);
+      setProducts(categorized);
     }
   };
 
+  const sortdata = (sortValue) => {
+    if (sortValue === "desc") {
+      axios.get("https://fakestoreapi.com/products?sort=desc").then((json) => {
+        setProducts(json.data);
+      });
+    } else {
+      axios.get("https://fakestoreapi.com/products?sort=asc").then((json) => {
+        setProducts(json.data);
+      });
+    }
+  };
   return (
     <div>
       <div className="grid-1">
         <div className="btn">
-          <button onClick={() => setFilter(data)}>Home</button>
+          <button onClick={() => setProducts(data)}>Home</button>
           <select
             onChange={(e) => {
               filterData(e.target.value);
@@ -66,20 +79,30 @@ const Products = () => {
           <select
             value={query}
             onChange={(e) => {
-              setQuery(parseInt(e.target.value));
+              setQuery(`limit=${parseInt(e.target.value)}`);
             }}
           >
-            <option value="0">Limits</option>
+            <option>Limits</option>
             <option value="5">5</option>
             <option value="10">10</option>
             <option value="15">15</option>
           </select>
+
+          <select
+            onChange={(e) => {
+              sortdata(e.target.value);
+            }}
+          >
+            <option>Sort</option>
+            <option value="desc">Desc</option>
+            <option value="asc">Asc</option>
+          </select>
         </div>
-        <Form sendData={handSubmit}/>
+        <Form sendData={handSubmit} />
       </div>
 
       <div className="products">
-        {filters.map((product, index) => {
+        {products.map((product, index) => {
           return (
             <div className="product-1">
               <div>
